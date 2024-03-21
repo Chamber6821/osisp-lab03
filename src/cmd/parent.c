@@ -65,6 +65,8 @@ bool handleCommand(const char *command) {
   return unknown(command);
 }
 
+bool isFastCommand(int ch) { return strchr("+-q", ch) != NULL; }
+
 int getch() {
   struct termios old, current;
   tcgetattr(STDIN_FILENO, &current);
@@ -97,7 +99,8 @@ void readCommand(char *buffer, int bufferSize) {
       continue;
     }
 
-    if (ch == '+' || ch == '-' || ch == 'q') {
+    if (isFastCommand(ch)) {
+      if (it != buffer) putchar('\n');
       it = buffer + 1;
       char str[2] = {(char)ch, 0};
       strcpy(buffer, str);
@@ -114,11 +117,12 @@ void readCommand(char *buffer, int bufferSize) {
     if (it == end) {
       for (; ch != '\n'; ch = getch())
         ;
+      putchar('\n');
       break;
     }
   }
-  putchar('\n');
   *it = 0;
+  if (!isFastCommand(*buffer)) putchar('\n');
 }
 
 int main() {
