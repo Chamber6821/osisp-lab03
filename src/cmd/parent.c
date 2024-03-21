@@ -19,25 +19,25 @@ pid_t run(const char *path, char *const *argv, char *const *envp) {
   return pid;
 }
 
-bool forkNew() {}
+bool forkNew() { return true; }
 
-bool killAll() {}
+bool killAll() { return true; }
 
-bool killLast() {}
+bool killLast() { return true; }
 
-bool list() {}
+bool list() { return true; }
 
-bool silent() {}
+bool silent() { return true; }
 
-bool grant() {}
+bool grant() { return true; }
 
-bool silentAll() {}
+bool silentAll() { return true; }
 
-bool grantAll() {}
+bool grantAll() { return true; }
 
-bool priority() {}
+bool priority() { return true; }
 
-bool quit() {}
+bool quit() { return false; }
 
 bool unknown(const char *command) {
   printf("Unknown command: %s\n", command);
@@ -45,18 +45,18 @@ bool unknown(const char *command) {
 }
 
 bool handleCommand(const char *command) {
-  if (strcmp(command, "+")) return forkNew();
-  if (strcmp(command, "-")) return killLast();
-  if (strcmp(command, "l")) return list();
-  if (strcmp(command, "k")) return killAll();
-  if (strcmp(command, "s")) return silentAll();
-  if (strcmp(command, "g")) return grantAll();
-  if (strcmp(command, "q")) return quit();
+  if (strcmp(command, "+") == 0) return forkNew();
+  if (strcmp(command, "-") == 0) return killLast();
+  if (strcmp(command, "l") == 0) return list();
+  if (strcmp(command, "k") == 0) return killAll();
+  if (strcmp(command, "s") == 0) return silentAll();
+  if (strcmp(command, "g") == 0) return grantAll();
+  if (strcmp(command, "q") == 0) return quit();
 
   int id = 0;
-  if (sscanf(command, "s%d", &id)) return silent(id);
-  if (sscanf(command, "g%d", &id)) return grant(id);
-  if (sscanf(command, "p%d", &id)) return priority(id);
+  if (sscanf(command, "s%d", &id) == 1) return silent(id);
+  if (sscanf(command, "g%d", &id) == 1) return grant(id);
+  if (sscanf(command, "p%d", &id) == 1) return priority(id);
   return unknown(command);
 }
 
