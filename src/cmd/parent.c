@@ -24,7 +24,19 @@ pid_t run(const char *path, char *const *argv, char *const *envp) {
   return pid;
 }
 
-bool forkNew() { return true; }
+pid_t runChild() { return run("build/child", NULL, NULL); }
+
+pid_t *childs = NULL;
+int childCount = 0;
+
+bool forkNew() {
+  pid_t child = runChild();
+  printf("Fork new: %d\n", child);
+  childCount++;
+  childs = realloc(childs, sizeof(pid_t) * childCount);
+  childs[childCount - 1] = child;
+  return true;
+}
 
 bool killAll() { return true; }
 
