@@ -1,6 +1,7 @@
 #define _XOPEN_SOURCE
 #define _GNU_SOURCE
 #include "error.h"
+#include <ctype.h>
 #include <errno.h>
 #include <stdbool.h>
 #include <stdio.h>
@@ -8,7 +9,11 @@
 #include <string.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <termios.h>
 #include <unistd.h>
+
+#define ENABLE(register, flag)  ((register) |= (flag))
+#define DISABLE(register, flag) ((register) &= ~(flag))
 
 pid_t run(const char *path, char *const *argv, char *const *envp) {
   pid_t pid = fork();
@@ -60,10 +65,66 @@ bool handleCommand(const char *command) {
   return unknown(command);
 }
 
-int main(int argc) {
+int getch() {
+  struct termios old, current;
+  tcgetattr(STDIN_FILENO, &current);
+  old = current;
+  DISABLE(current.c_lflag, ECHO);
+  DISABLE(current.c_lflag, ICANON);
+  tcsetattr(STDIN_FILENO, TCSANOW, &current);
+  int ch = getchar();
+  tcsetattr(STDIN_FILENO, TCSANOW, &old);
+  return ch;
+}
+
+char *appendChar(char *str, char *end, char ch) {
+  if (str == end) return str;
+  putchar(ch);
+  *str = ch;
+  return str + 1;
+}
+
+void readCommand(char *buffer, int bufferSize) {
+  int ch = 0;
+  char *it = buffer;
+  char *end = buffer + bufferSize - 1;
+  while ((ch = getch()) != '\n') {
+    if (ch == 127) {
+      it = it - 1 < buffer ? buffer : it - 1;
+      putchar('\b');
+      putchar(' ');
+      putchar('\b');
+      continue;
+    }
+
+    if (ch == '+' || ch == '-' || ch == 'q') {
+      it = buffer + 1;
+      char str[2] = {(char)ch, 0};
+      strcpy(buffer, str);
+      break;
+    }
+
+    if (ch == 0x1b) {
+      it = appendChar(it, end, '^');
+      it = appendChar(it, end, '[');
+    } else {
+      it = appendChar(it, end, ch);
+    }
+
+    if (it == end) {
+      for (; ch != '\n'; ch = getch())
+        ;
+      break;
+    }
+  }
+  putchar('\n');
+  *it = 0;
+}
+
+int main() {
   while (true) {
     char command[256];
-    scanf("%255s", command);
+    readCommand(command, sizeof(command));
     if (!handleCommand(command)) break;
   }
 }
