@@ -56,7 +56,10 @@ bool killAll() {
   return true;
 }
 
-bool list() { return true; }
+bool list() {
+  system("pstree");
+  return true;
+}
 
 bool silent() { return true; }
 
