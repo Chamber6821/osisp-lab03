@@ -93,7 +93,11 @@ bool grantAll() {
   return true;
 }
 
-bool priority() { return true; }
+bool priority(int id) {
+  silentAll();
+  grant(id);
+  return true;
+}
 
 bool quit() { return false; }
 
