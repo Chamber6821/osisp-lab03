@@ -61,9 +61,25 @@ bool list() {
   return true;
 }
 
-bool silent() { return true; }
+bool silent(int id) {
+  if (!(0 <= id && id < childCount)) {
+    printf("Silent: child %d not exists\n", id);
+    return true;
+  }
+  kill(childs[id], SIGUSR1);
+  printf("Silent: child %d can't talk\n", id);
+  return true;
+}
 
-bool grant() { return true; }
+bool grant(int id) {
+  if (!(0 <= id && id < childCount)) {
+    printf("Grant: child %d not exists\n", id);
+    return true;
+  }
+  kill(childs[id], SIGUSR2);
+  printf("Grant: child %d can talk\n", id);
+  return true;
+}
 
 bool silentAll() { return true; }
 
