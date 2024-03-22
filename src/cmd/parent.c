@@ -39,14 +39,20 @@ bool forkNew() {
   return true;
 }
 
-bool killAll() { return true; }
-
 bool killLast() {
   if (childCount == 0) return true;
   childCount--;
   printf("Kill PID: %d\n", childs[childCount]);
   kill(childs[childCount], SIGKILL);
   waitpid(childs[childCount], NULL, 0);
+  return true;
+}
+
+bool killAll() {
+  while (childCount)
+    killLast();
+  free(childs);
+  childs = NULL;
   return true;
 }
 
