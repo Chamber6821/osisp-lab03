@@ -157,4 +157,5 @@ int main() {
     readCommand(command, sizeof(command));
     if (!handleCommand(command)) break;
   }
+  return !killAll();
 }
