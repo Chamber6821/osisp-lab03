@@ -81,9 +81,17 @@ bool grant(int id) {
   return true;
 }
 
-bool silentAll() { return true; }
+bool silentAll() {
+  for (int i = 0; i < childCount; i++)
+    silent(i);
+  return true;
+}
 
-bool grantAll() { return true; }
+bool grantAll() {
+  for (int i = 0; i < childCount; i++)
+    grant(i);
+  return true;
+}
 
 bool priority() { return true; }
 
