@@ -88,6 +88,7 @@ bool silentAll() {
 }
 
 bool grantAll() {
+  alarm(0);
   for (int i = 0; i < childCount; i++)
     grant(i);
   return true;
@@ -96,6 +97,7 @@ bool grantAll() {
 bool priority(int id) {
   silentAll();
   grant(id);
+  alarm(5);
   return true;
 }
 
@@ -105,6 +107,8 @@ bool unknown(const char *command) {
   printf("Unknown command: %s\n", command);
   return true;
 }
+
+void onAlarm() { grantAll(); }
 
 bool handleCommand(const char *command) {
   if (strcmp(command, "+") == 0) return forkNew();
@@ -183,6 +187,7 @@ void readCommand(char *buffer, int bufferSize) {
 }
 
 int main() {
+  signal(SIGALRM, onAlarm);
   while (true) {
     char command[256];
     readCommand(command, sizeof(command));
