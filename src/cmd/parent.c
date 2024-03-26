@@ -1,9 +1,9 @@
 #define _XOPEN_SOURCE
 #define _GNU_SOURCE
 #include "error.h"
+#include "onSignal.h"
 #include <ctype.h>
 #include <errno.h>
-#include <signal.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -187,7 +187,7 @@ void readCommand(char *buffer, int bufferSize) {
 }
 
 int main() {
-  signal(SIGALRM, onAlarm);
+  onSignal(SIGALRM, onAlarm);
   while (true) {
     char command[256];
     readCommand(command, sizeof(command));
